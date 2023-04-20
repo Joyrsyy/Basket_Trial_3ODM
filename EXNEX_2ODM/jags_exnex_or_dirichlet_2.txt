@@ -1,0 +1,26 @@
+model{
+for (j in 1:J) {
+	r[j] ~ dbin(pi[j],n[j])
+	logit(pi[j]) <- theta[j] + logit(H0[j])
+	
+	theta[j] <- LogOdds[cl[j],j]
+	cl[j] ~ dcat(p.dist[j, 1:n.dist])
+	
+	p.dist[j, 1:n.dist] ~ ddirich(dist.prior[1:n.dist])
+	
+	LogOdds[n.dist,j] ~ dnorm(nex.mean,nex.prec)
+	for (k in 1:(n.dist-1)) {
+	  LogOdds[k,j] ~ dnorm(mu[k],prec.tau[k])
+	}
+}
+
+for (k in 1:(n.dist-1)) {
+	mu[k] ~ dnorm(ex.mu.mean[k],ex.mu.prec[k])
+	tau[k] ~ dnorm(0,ex.tau.prec[k])I(0.001,)
+	prec.tau[k] <- pow(tau[k],-2)
+}
+
+
+
+}
+
